@@ -27,11 +27,6 @@ public class NoahShip implements ShipMind {
             boolean collision = LineIntersectsCircle(ahead, ahead2, currentAsteroid);
 
             if(collision && (closestAsteroid == null || (DistanceToShip(shipPos, currentAsteroid) < DistanceToShip(shipPos, closestAsteroid)))){
-                System.out.println("Asteroid: " + currentAsteroid.pos());
-                System.out.println("Ship: " + shipPos);
-                System.out.println("Ahead: "+ ahead);
-                System.out.println("Ahead2: "+ ahead2);
-
                 closestAsteroid = currentAsteroid;
             }
         }
