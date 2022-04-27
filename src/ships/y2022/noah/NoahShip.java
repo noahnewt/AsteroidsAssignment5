@@ -10,16 +10,42 @@ public class NoahShip implements ShipMind {
     @Override
     public void init(ShipControl control) {
         this.control = control;
+        this.state = State.AGGRESSIVE;
+        this.Deciede();
     }
 
     @Override
     public void think(Perceptions perceptions, double v) {
-        control.shooting(true);
         CollisionAvoidance(perceptions, v);
     }
 
+    public enum State {
+        AGGRESSIVE,
+        AVOID
+    }
+
+   private State state;
+
+    public void Deciede(){
+        switch (state) {
+            case AGGRESSIVE:
+                control.shooting(true);
+                control.thrustBackward(false);
+                control.thrustForward(true);
+                control.rotateRight(false);
+                break;
+            case AVOID:
+                control.shooting(true);
+                control.thrustForward(false);
+                control.thrustBackward(true);
+                control.rotateRight(true);
+                break;
+        }
+    }
+
+
     public AsteroidPerception CheckClosestAsteroid(Perceptions perceptions, double v, Vector2d ahead, Vector2d ahead2, Vector2d shipPos){
-        AsteroidPerception currentAsteroid = null;
+        AsteroidPerception currentAsteroid;
         AsteroidPerception closestAsteroid = null;
 
         for(int i = 0; i < perceptions.asteroids().length; i++){
@@ -70,11 +96,13 @@ public class NoahShip implements ShipMind {
         Vector2d ahead2 = shipPos.$plus(velocity).$times(MAX_SEE_AHEAD * 0.5);
         AsteroidPerception closestAsteroid = CheckClosestAsteroid(perceptions, v, ahead, ahead2, shipPos);
 
-        control.thrustForward(true);
+
         if(closestAsteroid != null){
-            control.rotateRight(true);
+            state = State.AVOID;
+            this.Deciede();
         } else {
-            control.rotateRight(false);
+            state = State.AGGRESSIVE;
+            this.Deciede();
         }
     }
 }
